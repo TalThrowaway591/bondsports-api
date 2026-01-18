@@ -3,10 +3,21 @@ import { LocalAppProfile } from "./app-profile/local-app-profile";
 import { Config } from "./config";
 import { routes } from "./routes";
 import * as requestHandlers from "./request-handlers/index";
+import { AppProfile } from "./app-profile/app-profile";
+
 
 const registerRequestHandlers = (app: FastifyInstance) => {
     app.get(routes.heartbeat, (req: FastifyRequest, res: FastifyReply) => { res.send(1) });
     app.post(routes.accounts.create, requestHandlers.createAccountHandler)
+};
+
+
+const registerAppProfile = (app: FastifyInstance, appProfile: AppProfile): void => {
+    app.decorateRequest('appProfile', {
+        getter() {
+            return appProfile
+        }
+    })
 };
 
 const createServer = async (): Promise<FastifyInstance> => {
@@ -18,7 +29,10 @@ const createServer = async (): Promise<FastifyInstance> => {
 
     const appProfile = new LocalAppProfile(config);
 
+    registerAppProfile(app, appProfile)
+
     registerRequestHandlers(app);
+
 
     return app;
 };
