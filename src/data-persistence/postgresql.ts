@@ -35,17 +35,39 @@ export class PostgresqlDB<T extends object> implements Database<T> {
         return row;
     }
 
-    async find(entryId: string) {
-        return null
-    }
+    async update(id: string, row: T) {
+        const columns = Object.keys(row).reduce(
+            (previous: string, current: string) => `${previous.length > 0 ? `${previous},` : previous} ${current}`,
+            ""
+        );
+        const values = Object.values(row).reduce(
+            (previous: string, current: string) =>
+                `${previous.length > 0 ? `${previous},` : previous} ${typeof current === "string" ? `'${current}'` : current}`,
+            ""
+        );
 
-    async delete(entryId: string) {
-        const query = `UPDATE ${this.tableName} SET active = false WHERE id='${entryId}'`
+        const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${values})`;
 
         await this.client.query(query);
 
-        return null
+        return row;
     }
+
+    async find(accountId: string) {
+        const query = `SELECT * FROM ${this.tableName} WHERE accountId='${accountId}'`
+
+        const result = (await this.client.query(query)).rows[0];
+
+        return result;
+    }
+
+    // async delete(accountId: string) {
+    //     const query = `UPDATE ${this.tableName} SET active = false WHERE id='${accountId}'`
+
+    //     await this.client.query(query);
+
+    //     return null
+    // }
 
 
 }

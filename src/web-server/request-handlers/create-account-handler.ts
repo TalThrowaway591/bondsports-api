@@ -10,7 +10,6 @@ interface RequestBody {
 
 }
 
-
 interface CreateAccountRoute {
     Body: RequestBody
 }
@@ -37,6 +36,8 @@ const createAccountHandler = async (req: FastifyRequest<CreateAccountRoute>, res
     accountEntity.setCreatedTimestamp(Date.now())
 
     await accountEntityGateway.save(accountEntity);
+
+    // TODO: how to respond
 
     res.send('test')
 

@@ -4,7 +4,7 @@ export interface Database<T> {
     create: (cat: T) => Promise<T>;
     get: () => Promise<T[]>;
     find: (id: string) => Promise<T | null>;
-    // update: (id: string, row: T) => Promise<void>;
+    update: (id: string, row: T) => Promise<T>;
     // delete: (id: string) => Promise<void>;
 }
 

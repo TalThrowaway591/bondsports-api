@@ -59,9 +59,12 @@ class AccountPostgresEntityGateway implements AccountEntityGateway {
     async list(): Promise<AccountEntity[]> {
         const result = await this.db.get();
 
-        const entries = result.map(value => mapRowToEntry(value));
+        return result.map(value => mapRowToEntry(value));
+    }
 
-        return entries.filter(entry => !!entry.isActive);
+    async find(accountId: string): Promise<AccountEntity> {
+        return await this.db.find(accountId);
+
     }
 
     async save(accountEntity: AccountEntity): Promise<void> {
@@ -70,11 +73,11 @@ class AccountPostgresEntityGateway implements AccountEntityGateway {
         return;
     }
 
-    async delete(entryId: string): Promise<void> {
-        await this.db.delete(entryId);
+    // async delete(entryId: string): Promise<void> {
+    //     await this.db.delete(entryId);
 
-        return;
-    }
+    //     return;
+    // }
 }
 
 export { AccountPostgresEntityGateway };

@@ -5,6 +5,10 @@ interface AccountEntityGateway {
 
     list(): Promise<AccountEntity[]>;
 
+    find(accountId: string): Promise<AccountEntity>;
+
+    // block(): Promise<void>;
+
     // delete(id: string): Promise<void>;
 }
 
