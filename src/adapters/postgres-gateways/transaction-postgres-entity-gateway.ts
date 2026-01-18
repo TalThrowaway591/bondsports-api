@@ -51,6 +51,18 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
         return;
     }
 
+    async list(accountId: string): Promise<TransactionEntity[]> {
+        const result = await this.db.get({ key: 'account_id', value: accountId });
+
+        return result.map(value => mapRowToEntry(value));
+    }
+
+    async listByDateBoundary(accountId: string, boundary: { startDate: number, endDate: number }): Promise<TransactionEntity[]> {
+        const result = await this.db.getByBoundary(accountId, boundary);
+
+        return result.map(value => mapRowToEntry(value));
+    }
+
     // async delete(entryId: string): Promise<void> {
     //     await this.db.delete(entryId);
 

@@ -19,8 +19,16 @@ export class PostgresqlDB<T extends object> implements Database<T> {
         this.client = client;
         this.tableName = tableName;
     }
-    async get(): Promise<T[]> {
-        const query = `SELECT * FROM ${this.tableName}`
+    async get(whereClause?: { key: string, value: string }): Promise<T[]> {
+        let query = `SELECT * FROM ${this.tableName}`
+
+        if (whereClause) {
+            const { key, value } = whereClause
+            const formattedValue = typeof value === 'string' ? `'${value}'` : value
+
+            console.log(typeof value)
+            query += ` WHERE ${key} = ${formattedValue}`
+        }
 
         const result = (await this.client.query(query)).rows;
 
@@ -65,6 +73,24 @@ export class PostgresqlDB<T extends object> implements Database<T> {
 
         console.log('result')
         console.log(result)
+
+        return result;
+    }
+
+    // TODO: fix parameres not general
+    async getByBoundary(accountId: string, boundary: { startDate: number, endDate: number }): Promise<T[]> {
+        const formattedBoundary = {
+            startDate: new Date(boundary.startDate),
+            endDate: new Date(boundary.endDate)
+        }
+
+        // TODO: change all queries to have this type of injection
+        let query = `SELECT * FROM ${this.tableName} WHERE account_id = '${accountId}' AND created_at >= $1  AND created_at < $2`
+
+        console.log('getByBoundary query')
+        console.log(query)
+
+        const result = (await this.client.query(query, [formattedBoundary.startDate, formattedBoundary.endDate])).rows;
 
         return result;
     }

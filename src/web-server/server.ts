@@ -11,6 +11,7 @@ const registerRequestHandlers = (app: FastifyInstance) => {
     app.post(routes.accounts.create, requestHandlers.createAccountHandler)
     app.post(routes.accounts.block, requestHandlers.blockAccountHandler)
     app.post(routes.accounts.deposit, requestHandlers.depositAccountHandler)
+    app.get(routes.accounts.statement, requestHandlers.retrieveAccountStatemenetHandler)
 };
 
 
