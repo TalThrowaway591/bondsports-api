@@ -6,13 +6,17 @@ const blockAccountHandler = async (req: FastifyRequest<{ Params: { accountId: st
 
     const { accountId } = req.params;
 
-
     const accountEntity = await accountEntityGateway.find(accountId)
 
-    accountEntity.setActiveFlag(false)
+    if (!accountEntity) {
+        res.status(404).send('account not found')
 
+        return;
+    }
 
+    accountEntity.blockAccount();
 
+    await accountEntityGateway.update(accountId, accountEntity)
 
     res.send('test')
 

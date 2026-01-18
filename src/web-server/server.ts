@@ -10,6 +10,7 @@ const registerRequestHandlers = (app: FastifyInstance) => {
     app.get(routes.heartbeat, (req: FastifyRequest, res: FastifyReply) => { res.send(1) });
     app.post(routes.accounts.create, requestHandlers.createAccountHandler)
     app.post(routes.accounts.block, requestHandlers.blockAccountHandler)
+    app.post(routes.accounts.deposit, requestHandlers.depositAccountHandler)
 };
 
 

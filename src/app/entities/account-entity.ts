@@ -60,6 +60,18 @@ class AccountEntity extends Entity {
     public getCreatedTimestamp(): number {
         return this.createdTimestamp;
     }
+
+    public blockAccount(): void {
+        this.activeFlag = false;
+    }
+
+    public deposit(amount: number): void {
+        this.balance += amount;
+    }
+
+    public withdraw(amount: number): void {
+        this.balance -= amount;
+    }
 }
 
 export { AccountEntity };

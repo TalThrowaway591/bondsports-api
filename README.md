@@ -17,3 +17,11 @@
 
 - To run the application, run `npm start`, an option to watch the process for changes is available by running `npm run start:dev`
 
+
+## TODO:
+- single DB transaction: when updating balance (add transaction row + change balance in accounts)
+
+
+## Comments
+- some business logic is stored inside the handlers, it shouldnt' be, there should be usecases
+inside the /app folder (business logic)

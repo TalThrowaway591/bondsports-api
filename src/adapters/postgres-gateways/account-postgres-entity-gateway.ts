@@ -62,13 +62,24 @@ class AccountPostgresEntityGateway implements AccountEntityGateway {
         return result.map(value => mapRowToEntry(value));
     }
 
-    async find(accountId: string): Promise<AccountEntity> {
-        return await this.db.find(accountId);
+    async find(accountId: string): Promise<AccountEntity | null> {
+        const result = await this.db.find(accountId);
+
+        if (result)
+            return mapRowToEntry(result);
+        else
+            return null;
 
     }
 
     async save(accountEntity: AccountEntity): Promise<void> {
         await this.db.create(mapEntryToRow(accountEntity));
+
+        return;
+    }
+
+    async update(accountId: string, accountEntity: AccountEntity): Promise<void> {
+        await this.db.update(accountId, mapEntryToRow(accountEntity));
 
         return;
     }

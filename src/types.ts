@@ -4,7 +4,7 @@ export interface Database<T> {
     create: (cat: T) => Promise<T>;
     get: () => Promise<T[]>;
     find: (id: string) => Promise<T | null>;
-    update: (id: string, row: T) => Promise<T>;
+    update: (id: string, row: T) => Promise<void>;
     // delete: (id: string) => Promise<void>;
 }
 
@@ -27,5 +27,11 @@ export type AccountEntityType = Entity & {
     daily_withdrawl_limit: number;
     active_flag: boolean;
     account_type: number;
+    created_at: string;
+};
+
+export type TransactionEntityType = Entity & {
+    account_id: string;
+    amount: number;
     created_at: string;
 };

@@ -1,8 +1,9 @@
 import { AccountEntityGateway } from "../../app/ports/account-entity-gateway";
 import { PostgresqlDB } from "../../data-persistence/postgresql";
 import { Client } from 'pg';
-import { AccountEntityType } from "../../types";
+import { AccountEntityType, TransactionEntityType } from "../../types";
 import { AccountPostgresEntityGateway } from "../../adapters/postgres-gateways/account-postgres-entity-gateway";
+import { TransactionPostgresEntityGateway } from "../../adapters/postgres-gateways/transaction-postgres-entity-gateway";
 
 // TODO: in memory DB
 type Config = {
@@ -20,6 +21,11 @@ abstract class AppProfile {
         const postgresqlDb = new PostgresqlDB<AccountEntityType>(this.postgresqlClient, "accounts")
 
         return new AccountPostgresEntityGateway(postgresqlDb);
+    }
+    public getTransactionEntityGateway(): TransactionPostgresEntityGateway {
+        const postgresqlDb = new PostgresqlDB<TransactionEntityType>(this.postgresqlClient, "transactions")
+
+        return new TransactionPostgresEntityGateway(postgresqlDb);
     }
 }
 

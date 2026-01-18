@@ -3,9 +3,9 @@ import { Entity } from "./entity";
 class TransactionEntity extends Entity {
     private accountId: string = "";
 
-    private value: number = 0;
+    private amount: number = 0;
 
-    private date: number = Date.now();
+    private createdAt: number = Date.now();
 
     public constructor(id?: string) {
         super("transaction", id);
@@ -15,24 +15,24 @@ class TransactionEntity extends Entity {
         this.accountId = accountId;
     }
 
-    public setValue(value: number): void {
-        this.value = value;
+    public setAmount(amount: number): void {
+        this.amount = amount;
     }
 
-    public setDate(date: number): void {
-        this.date = date;
+    public setCreatedAt(date: number): void {
+        this.createdAt = date;
     }
 
     public getAccountId(): string {
         return this.accountId;
     }
 
-    public getValue(): number {
-        return this.value;
+    public getAmount(): number {
+        return this.amount;
     }
 
-    public getDate(): number {
-        return this.date;
+    public getCreatedAt(): number {
+        return this.createdAt;
     }
 }
 

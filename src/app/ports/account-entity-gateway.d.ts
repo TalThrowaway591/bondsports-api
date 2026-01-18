@@ -5,7 +5,9 @@ interface AccountEntityGateway {
 
     list(): Promise<AccountEntity[]>;
 
-    find(accountId: string): Promise<AccountEntity>;
+    find(accountId: string): Promise<AccountEntity | null>;
+
+    update(accountId: string, accountEntity: AccountEntity): Promise<void>;
 
     // block(): Promise<void>;
 
