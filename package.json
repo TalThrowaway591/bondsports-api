@@ -6,7 +6,7 @@
         "compile": "tsc",
         "compile:dev": "tsc --watch",
         "start": "node dist",
-        "start:dev": "concurrently \"tsc --watch\" \"nodemon dist\""
+        "start:dev": "concurrently \"tsc --watch\" \"nodemon dist/web-server\""
     },
     "keywords": [],
     "author": "",
@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "dotenv": "^17.2.3",
-        "fastify": "^5.7.1"
+        "fastify": "^5.7.1",
+        "nanoid": "^5.1.6"
     }
 }

@@ -1,8 +1,10 @@
 const routes = {
+    heartbeat: '/heartbeat',
     entries: {
-        heartbeat: '/heartbeat',
         accounts: {
             create: '/api/accounts'
         }
     }
 }
+
+export { routes }

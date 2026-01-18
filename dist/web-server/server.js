@@ -15,12 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createServer = void 0;
 const fastify_1 = __importDefault(require("fastify"));
 const local_app_profile_1 = require("./app-profile/local-app-profile");
+const routes_1 = require("./routes");
+const registerRequestHandlers = (app) => {
+    app.get(routes_1.routes.heartbeat, (req, res) => { res.send(1); });
+};
 const createServer = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, fastify_1.default)({
         logger: true
     });
     const config = {};
     const appProfile = new local_app_profile_1.LocalAppProfile(config);
+    registerRequestHandlers(app);
     return app;
 });
 exports.createServer = createServer;
