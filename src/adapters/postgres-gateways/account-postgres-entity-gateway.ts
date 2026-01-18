@@ -1,6 +1,6 @@
 import { AccountEntityType } from '../../types'
 import { AccountEntityGateway } from "../../app/ports/account-entity-gateway";
-import { PostgresqlDB } from "../../data-persistance/postgresql";
+import { PostgresqlDB } from "../../data-persistence/postgresql";
 import { AccountEntity } from "../../app/entities/account-entity";
 
 const mapRowToEntry = (value: AccountEntityType): AccountEntity => {
@@ -46,7 +46,7 @@ const mapEntryToRow = (accountEntity: AccountEntity): AccountEntityType => {
     }
 };
 
-class EntryPostgresEntityGateway implements AccountEntityGateway {
+class AccountPostgresEntityGateway implements AccountEntityGateway {
     protected readonly db: PostgresqlDB<AccountEntityType>
 
     protected readonly tableName: string;
@@ -77,4 +77,4 @@ class EntryPostgresEntityGateway implements AccountEntityGateway {
     }
 }
 
-export { EntryPostgresEntityGateway };
+export { AccountPostgresEntityGateway };

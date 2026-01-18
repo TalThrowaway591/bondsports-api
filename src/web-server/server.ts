@@ -13,7 +13,7 @@ const createServer = async (): Promise<FastifyInstance> => {
         logger: true
     });
 
-    const config = {}
+    const config = { postgresqlClient: await Config.getPostgresClient() }
 
     const appProfile = new LocalAppProfile(config);
 
