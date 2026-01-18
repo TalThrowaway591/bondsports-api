@@ -22,11 +22,10 @@ export type Entity = {
 
 // correlates to x entities as they're saved in any data persistance layer
 export type AccountEntityType = Entity & {
-    personId: string;
+    person_id: string;
     balance: number;
-    dailyWithdrawlLimit: number;
-    activeFlag: boolean;
-    accountType: number;
-    createdTimestamp: string;
+    daily_withdrawl_limit: number;
+    active_flag: boolean;
+    account_type: number;
+    created_at: string;
 };
-

@@ -6,43 +6,43 @@ import { AccountEntity } from "../../app/entities/account-entity";
 const mapRowToEntry = (value: AccountEntityType): AccountEntity => {
     const {
         id,
-        personId,
+        person_id,
         balance,
-        dailyWithdrawlLimit,
-        activeFlag,
-        accountType,
-        createdTimestamp
+        daily_withdrawl_limit,
+        active_flag,
+        account_type,
+        created_at
     } = value;
 
     const accountEntity = new AccountEntity(id);
 
-    accountEntity.setPersonId(personId);
+    accountEntity.setPersonId(person_id);
     accountEntity.setBalance(balance);
-    accountEntity.setDailyWithdrawlLimit(dailyWithdrawlLimit);
-    accountEntity.setActiveFlag(activeFlag);
-    accountEntity.setAccountType(accountType);
-    accountEntity.setCreatedTimestamp(Date.parse(createdTimestamp))
+    accountEntity.setDailyWithdrawlLimit(daily_withdrawl_limit);
+    accountEntity.setActiveFlag(active_flag);
+    accountEntity.setAccountType(account_type);
+    accountEntity.setCreatedTimestamp(Date.parse(created_at))
 
     return accountEntity;
 };
 
 const mapEntryToRow = (accountEntity: AccountEntity): AccountEntityType => {
     const id = accountEntity.getId();
-    const personId = accountEntity.getPersonId();
+    const person_id = accountEntity.getPersonId();
     const balance = accountEntity.getBalance();
-    const dailyWithdrawlLimit = accountEntity.getDailyWithdrawlLimit();
-    const activeFlag = accountEntity.isActive();
-    const accountType = accountEntity.getAccountType();
-    const createdTimestamp = new Date(accountEntity.getCreatedTimestamp()).toISOString();
+    const daily_withdrawl_limit = accountEntity.getDailyWithdrawlLimit();
+    const active_flag = accountEntity.isActive();
+    const account_type = accountEntity.getAccountType();
+    const created_at = new Date(accountEntity.getCreatedTimestamp()).toISOString();
 
     return {
         id,
-        personId,
+        person_id,
         balance,
-        dailyWithdrawlLimit,
-        activeFlag,
-        accountType,
-        createdTimestamp
+        daily_withdrawl_limit,
+        active_flag,
+        account_type,
+        created_at
     }
 };
 

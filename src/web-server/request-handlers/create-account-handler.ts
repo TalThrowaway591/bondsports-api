@@ -1,12 +1,26 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
 
-interface RouteOptions {
-    Reply: any[] | string
+interface RequestBody {
+    personId: string;
+    dailyWithdrawlLimit: string;
+    accountType: number // TODO
+
 }
 
-const createEntryHandler = async (req: FastifyRequest, res: FastifyReply<RouteOptions>) => {
-    const { title, body } = req.body;
+
+interface CreateAccountRoute {
+    Body: RequestBody
+}
+
+// TODO: add reply type
+const createAccountHandler = async (req: FastifyRequest<CreateAccountRoute>, res: FastifyReply) => {
+    const { personId, dailyWithdrawlLimit, accountType } = req.body;
+
+    console.log('test')
+    console.log(personId);
+
+
 
     // const entryEntityGateway = req.appProfile.getEntryEntityGateway();
 
@@ -22,7 +36,8 @@ const createEntryHandler = async (req: FastifyRequest, res: FastifyReply<RouteOp
 
     // await entryEntityGateway.save(entryEntity);
 
-    res.send('tes')
+    res.send('test')
+
 }
 
-export { createEntryHandler }
+export { createAccountHandler }
