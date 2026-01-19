@@ -1,4 +1,4 @@
-# add a new account
+#!/bin/bash
 
 curl \
     -X POST \
