@@ -58,6 +58,24 @@ npm test # to run unit tests
 - db paging (maybe added to 'shoul've done' list)
 - add in memory data persistence
 
+- make sure money in cents
+- handle account type
+
 ## Comments
 - some business logic is stored inside the handlers, it shouldnt' be, there should be usecases
 inside the /app folder (business logic)
+
+- fields regarding money numerals should be counted in cents, this should be persistent throughout the API and any client should be aware of this design choice.
+
+
+## Design changes:
+
+The provided document specifies entity parameters - I have different layers of obejects: PG row -> Business Entity -> API Entity.
+
+I made some minor changes in the entity specification for convinience and ease-of-use.
+
+- `accountId` in Account is changed to just `id`, same with other entitites. (term. repetition)
+- `createdAt` in Account is changed to `creationTimestamp` (better terminology IMO)
+
+- `value` in Transaction is changed to `amount` (to signify a numeral)
+- `transactionDate` in Transaction is changed to `createdAt` (term. repetition)
