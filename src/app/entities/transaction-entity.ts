@@ -1,4 +1,5 @@
 import { Entity } from "./entity";
+import { InvalidTransactionAmountError } from "../errors/transaction-errors";
 
 class TransactionEntity extends Entity {
     private accountId: string = "";
@@ -16,8 +17,19 @@ class TransactionEntity extends Entity {
     }
 
     public setAmount(amount: number): void {
+
+        if (!Number.isFinite(amount)) throw new InvalidTransactionAmountError(amount)
+
+        if (!Number.isInteger(amount)) throw new InvalidTransactionAmountError(amount)
+
+        if (amount === 0) throw new InvalidTransactionAmountError(amount)
+
+
+        // maybe add conditional for max amount?
+
         this.amount = amount;
     }
+
 
     public setCreatedAt(date: number): void {
         this.createdAt = date;

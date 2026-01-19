@@ -35,3 +35,12 @@ curl \
 curl \
     -X GET \
     "http://localhost:3000/api/accounts/account-nv49u32z/statement?from=2026-01-02&to=2026-01-06"
+
+
+# withdraw
+
+curl \
+    -X POST \
+    --header "Content-Type: application/json" \
+    --data '{"amount":10}' \
+    http://localhost:3000/api/accounts/account-nv49u32z/withdraw

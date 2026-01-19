@@ -1,52 +1,114 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { TransactionEntity } from "../../../src/app/entities/transaction-entity";
+import { describe, it, expect } from "vitest";
+import { TransactionEntity } from '../../../src/app/entities/transaction-entity';
+import { InvalidTransactionAmountError } from '../../../src/app/errors/transaction-errors';
 
 describe("TransactionEntity", () => {
-    beforeEach(() => {
-        vi.restoreAllMocks();
+    describe("setAmount()", () => {
+        it("sets a valid integer amount", () => {
+            const tx = new TransactionEntity();
+
+            tx.setAmount(100);
+
+            expect(tx.getAmount()).toBe(100);
+        });
+
+        it("throws InvalidTransactionAmountError for NaN", () => {
+            const tx = new TransactionEntity();
+
+            expect(() => tx.setAmount(Number.NaN)).toThrowError(InvalidTransactionAmountError);
+        });
+
+        it("throws InvalidTransactionAmountError for Infinity", () => {
+            const tx = new TransactionEntity();
+
+            expect(() => tx.setAmount(Number.POSITIVE_INFINITY)).toThrowError(
+                InvalidTransactionAmountError
+            );
+        });
+
+        it("throws InvalidTransactionAmountError for -Infinity", () => {
+            const tx = new TransactionEntity();
+
+            expect(() => tx.setAmount(Number.NEGATIVE_INFINITY)).toThrowError(
+                InvalidTransactionAmountError
+            );
+        });
+
+        it("throws InvalidTransactionAmountError for non-integer amounts", () => {
+            const tx = new TransactionEntity();
+
+            expect(() => tx.setAmount(10.5)).toThrowError(InvalidTransactionAmountError);
+        });
+
+        it("throws InvalidTransactionAmountError for 0", () => {
+            const tx = new TransactionEntity();
+
+            expect(() => tx.setAmount(0)).toThrowError(InvalidTransactionAmountError);
+        });
+
+        it("allows negative integers (if debits are allowed in your domain)", () => {
+            const tx = new TransactionEntity();
+
+            tx.setAmount(-500);
+
+            expect(tx.getAmount()).toBe(-500);
+        });
+
+        it("does not mutate the previous amount if the new amount is invalid", () => {
+            const tx = new TransactionEntity();
+
+            tx.setAmount(100);
+
+            expect(() => tx.setAmount(0)).toThrowError(InvalidTransactionAmountError);
+
+            expect(tx.getAmount()).toBe(100);
+        });
+
+        it("can optionally assert error metadata (if your error exposes the invalid amount)", () => {
+            const tx = new TransactionEntity();
+
+            try {
+                tx.setAmount(0);
+                expect.fail("Expected InvalidTransactionAmountError");
+            } catch (err) {
+                expect(err).toBeInstanceOf(InvalidTransactionAmountError);
+
+                // Uncomment if your error has a field like `amount`
+                // expect((err as InvalidTransactionAmountError).amount).toBe(0);
+
+                // Or if you embed it in the message:
+                // expect((err as Error).message).toContain("0");
+            }
+        });
     });
 
-    it("should initialize with correct defaults", () => {
-        const entity = new TransactionEntity();
+    describe("setAccountId() / getAccountId()", () => {
+        it("sets and returns accountId", () => {
+            const tx = new TransactionEntity();
 
-        expect(entity.getAccountId()).toBe("");
-        expect(entity.getAmount()).toBe(0);
+            tx.setAccountId("acc_123");
 
-        const createdAt = entity.getCreatedAt();
-        expect(typeof createdAt).toBe("number");
-        expect(createdAt).toBeGreaterThan(0);
+            expect(tx.getAccountId()).toBe("acc_123");
+        });
     });
 
-    it("should set and get accountId", () => {
-        const entity = new TransactionEntity();
+    describe("setCreatedAt() / getCreatedAt()", () => {
+        it("sets and returns createdAt", () => {
+            const tx = new TransactionEntity();
+            const date = 1_700_000_000_000;
 
-        entity.setAccountId("acc_123");
-        expect(entity.getAccountId()).toBe("acc_123");
-    });
+            tx.setCreatedAt(date);
 
-    it("should set and get amount", () => {
-        const entity = new TransactionEntity();
+            expect(tx.getCreatedAt()).toBe(date);
+        });
 
-        entity.setAmount(250);
-        expect(entity.getAmount()).toBe(250);
-    });
+        it("defaults createdAt to a timestamp near now", () => {
+            const before = Date.now();
+            const tx = new TransactionEntity();
+            const after = Date.now();
 
-    it("should set and get createdAt", () => {
-        const entity = new TransactionEntity();
-
-        entity.setCreatedAt(1700000000000);
-        expect(entity.getCreatedAt()).toBe(1700000000000);
-    });
-
-    it("should allow setting all properties together", () => {
-        const entity = new TransactionEntity();
-
-        entity.setAccountId("acc_999");
-        entity.setAmount(-75); // negative could represent withdrawal (depends on your domain)
-        entity.setCreatedAt(946684800000); // 2000-01-01 UTC
-
-        expect(entity.getAccountId()).toBe("acc_999");
-        expect(entity.getAmount()).toBe(-75);
-        expect(entity.getCreatedAt()).toBe(946684800000);
+            expect(tx.getCreatedAt()).toBeGreaterThanOrEqual(before);
+            expect(tx.getCreatedAt()).toBeLessThanOrEqual(after);
+        });
     });
 });

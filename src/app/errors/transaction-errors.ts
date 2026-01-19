@@ -4,7 +4,7 @@ export class InvalidTransactionAmountError extends DomainError {
     public readonly code = "INVALID_TRANSACTION_AMOUNT";
 
     constructor(amount: number) {
-        super(`Invalid transaction amount: ${amount}. Amount must be != 0.`);
+        super(`Invalid transaction amount: ${amount}.`);
         this.name = "InvalidTransactionAmountError";
     }
 }
