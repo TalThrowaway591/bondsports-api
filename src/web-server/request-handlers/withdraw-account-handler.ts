@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { TransactionEntity } from '../../app/entities/transaction-entity';
 import { RouteGenericInterface } from 'fastify';
-import { NotFoundError } from '../utils/app-error';
+import { NotFoundError } from '../utils/server-error';
 
 interface WithdrawAccountRoute extends RouteGenericInterface {
     Params: {

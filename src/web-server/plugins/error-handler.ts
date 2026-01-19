@@ -1,14 +1,15 @@
-import type { FastifyInstance, FastifyError } from "fastify";
-import { AppError } from "../utils/app-error";
+// ✅ add these imports
+import { FastifyError, FastifyInstance } from "fastify";
+import { DomainError } from "../../app/errors/domain-error";
+import { mapDomainErrorToServerError } from '../utils/domain-error-mapper';
 import type { ErrorResponse } from "../../types";
+import { ServerError } from "../utils/server-error";
 
 function isFastifyValidationError(err: unknown): err is FastifyError & { validation: unknown } {
     return typeof err === "object" && err !== null && "validation" in err;
 }
 
-
 export async function errorHandlerPlugin(app: FastifyInstance) {
-    // Handle 404s cleanly
     app.setNotFoundHandler(async (request, reply) => {
         const body: ErrorResponse = {
             error: {
@@ -20,16 +21,16 @@ export async function errorHandlerPlugin(app: FastifyInstance) {
         return reply.status(404).send(body);
     });
 
-    // Central error handler
     app.setErrorHandler(async (err, request, reply) => {
-        // If Fastify already started sending headers, don't break the stream
         if (reply.sent) {
             request.log.error({ err }, "Error after reply was sent");
             return;
         }
 
-        // 1) Schema/validation errors (body/query/params)
-        // Fastify sets: err.code === 'FST_ERR_VALIDATION' and includes `validation`
+        // ✅ normalize to a mutable variable so we can map domain -> app error
+        let error: unknown = err;
+
+        // 1) Validation errors
         if ((err as FastifyError).code === "FST_ERR_VALIDATION" || isFastifyValidationError(err)) {
             const body: ErrorResponse = {
                 error: {
@@ -40,30 +41,33 @@ export async function errorHandlerPlugin(app: FastifyInstance) {
                 },
             };
 
-            // Log as warn (not server crash)
             request.log.warn({ err }, "Validation error");
             return reply.status(400).send(body);
         }
 
-        // 2) Your domain/business errors
-        if (err instanceof AppError) {
-            // Log 4xx as warn, 5xx as error
-            const level = err.statusCode >= 500 ? "error" : "warn";
-            request.log[level]({ err }, "App error");
+        // ✅ 2) Domain errors -> ServerError
+        if (error instanceof DomainError) {
+            error = mapDomainErrorToServerError(error);
+        }
+
+        // 3) App errors (after mapping or thrown directly)
+        if (error instanceof ServerError) {
+            const level = error.statusCode >= 500 ? "error" : "warn";
+            request.log[level]({ err: error }, "App error");
 
             const body: ErrorResponse = {
                 error: {
-                    code: err.code,
-                    message: err.expose ? err.message : "Internal server error",
+                    code: error.code,
+                    message: error.expose ? error.message : "Internal server error",
                     requestId: request.id,
-                    details: err.expose ? err.details : undefined,
+                    details: error.expose ? error.details : undefined,
                 },
             };
 
-            return reply.status(err.statusCode).send(body);
+            return reply.status(error.statusCode).send(body);
         }
 
-        // 3) Fastify-sensible httpErrors (or other errors with statusCode)
+        // 4) Fallback
         const statusCode =
             typeof (err as any).statusCode === "number" ? (err as any).statusCode : 500;
 

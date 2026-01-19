@@ -1,5 +1,7 @@
 import { time } from "node:console";
 import { Entity } from "./entity";
+import { InvalidAmountError, AccountBlockedError, InsufficientFundsError, DailyLimitExceededError } from "../errors/account-errors";
+import { DomainError } from "../errors/domain-error";
 
 class AccountEntity extends Entity {
     private personId: string = "";
@@ -66,12 +68,28 @@ class AccountEntity extends Entity {
     }
 
     public deposit(amount: number): void {
+        if (amount <= 0) throw new InvalidAmountError(amount);
+
+        if (!this.activeFlag) throw new AccountBlockedError();
+
         this.balance += amount;
     }
 
     public withdraw(amount: number): void {
+        if (amount <= 0) throw new InvalidAmountError(amount);
+        if (!this.activeFlag) throw new AccountBlockedError();
+
+        if (amount > this.balance) {
+            throw new InsufficientFundsError()
+        }
+
+        if (amount > this.dailyWithdrawlLimit) {
+            throw new DailyLimitExceededError();
+        }
+
         this.balance -= amount;
     }
 }
+
 
 export { AccountEntity };

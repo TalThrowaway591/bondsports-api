@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { TransactionEntity } from '../../app/entities/transaction-entity';
 import { RouteGenericInterface } from 'fastify';
-import { NotFoundError } from '../utils/app-error';
+import { NotFoundError } from '../utils/server-error';
 
 interface DepositAccountRoute extends RouteGenericInterface {
     Params: {
@@ -24,6 +24,7 @@ const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, r
     const { amount } = req.body;
 
     // TODO: must be a better way to make this atomic
+    // check outbox pattern or make atomic transaction
 
     const accountEntity = await accountEntityGateway.find(accountId)
 
@@ -40,12 +41,13 @@ const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, r
         transactionEntity.setAmount(amount);
         transactionEntity.setCreatedAt(Date.now());
 
-        transactionEntityGateway.save(transactionEntity);
+        await transactionEntityGateway.save(transactionEntity);
 
     } catch (e) {
         accountEntity.withdraw(amount)
 
         await accountEntityGateway.update(accountId, accountEntity)
+
     }
 
     res.code(204).send();

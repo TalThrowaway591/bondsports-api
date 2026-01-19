@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
-import { GeneralError, NotFoundError } from '../utils/app-error';
+import { GeneralError, NotFoundError } from '../utils/server-error';
 import { RouteGenericInterface } from 'fastify';
 
 interface BlockAccountRoute extends RouteGenericInterface {

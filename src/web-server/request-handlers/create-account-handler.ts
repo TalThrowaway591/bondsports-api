@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply, RouteGenericInterface } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
-import { AppError, GeneralError } from '../utils/app-error';
+import { ServerError, GeneralError } from '../utils/server-error';
 import { mapAccountEntityToApiObject, AccountApiObject } from '../../adapters/mappers/account-entity';
 
 interface RequestBody {

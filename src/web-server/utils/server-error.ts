@@ -1,4 +1,4 @@
-export class AppError extends Error {
+export class ServerError extends Error {
     public readonly statusCode: number;
     public readonly code: string;
     public readonly details?: unknown;
@@ -13,7 +13,7 @@ export class AppError extends Error {
         cause?: unknown;
     }) {
         super(opts.message);
-        this.name = "AppError";
+        this.name = "ServerError";
         this.statusCode = opts.statusCode;
         this.code = opts.code;
         this.details = opts.details;
@@ -24,25 +24,25 @@ export class AppError extends Error {
     }
 }
 
-export class NotFoundError extends AppError {
+export class NotFoundError extends ServerError {
     constructor(message = "Resource not found", details?: unknown) {
         super({ message, statusCode: 404, code: "NOT_FOUND", details });
     }
 }
 
-export class GeneralError extends AppError {
+export class GeneralError extends ServerError {
     constructor(message = "General Error", details?: unknown) {
         super({ message, statusCode: 500, code: "GENERAL", details });
     }
 }
 
-export class UnauthorizedError extends AppError {
+export class UnauthorizedError extends ServerError {
     constructor(message = "Unauthorized") {
         super({ message, statusCode: 401, code: "UNAUTHORIZED" });
     }
 }
 
-export class ConflictError extends AppError {
+export class ConflictError extends ServerError {
     constructor(message = "Conflict", details?: unknown) {
         super({ message, statusCode: 409, code: "CONFLICT", details });
     }
