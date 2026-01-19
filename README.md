@@ -51,21 +51,6 @@ npm test # to run unit tests
 ./scripts/create-account
 ```
 
-## TODO:
-- single DB transaction: when updating balance (add transaction row + change balance in accounts)
-- rm gh alt account 
-- db connection pool
-- db paging (maybe added to 'shoul've done' list)
-- add in memory data persistence
-
-- make sure money in cents
-- handle account type
-
-## Comments
-- some business logic is stored inside the handlers, it shouldnt' be, there should be usecases
-inside the /app folder (business logic)
-
-
 ## Design changes
 
 The provided document specifies entity parameters. 
