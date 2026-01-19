@@ -6,7 +6,10 @@
         "build": "tsc",
         "build:dev": "tsc --watch",
         "start": "node dist",
-        "start:dev": "concurrently \"tsc --watch\" \"nodemon dist/web-server\""
+        "start:dev": "concurrently \"tsc --watch\" \"nodemon dist/web-server\"",
+        "test": "vitest",
+        "test:watch": "vitest --watch",
+        "coverage": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
@@ -16,9 +19,11 @@
         "@types/config": "^3.3.5",
         "@types/node": "^25.0.9",
         "@types/pg": "^8.16.0",
+        "@vitest/coverage-v8": "^4.0.17",
         "concurrently": "^9.2.1",
         "nodemon": "^3.1.11",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.17"
     },
     "dependencies": {
         "@fastify/sensible": "^6.0.4",
