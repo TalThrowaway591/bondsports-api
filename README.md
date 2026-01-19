@@ -66,7 +66,7 @@ I made some minor changes in the entity specification for convinience and ease-o
 - `transactionDate` in Transaction is changed to `createdAt` (term. repetition)
 
 
-# TODO
+## TODO
 
 - Add and interact with a DB connection pool instead of a single connection.
 
