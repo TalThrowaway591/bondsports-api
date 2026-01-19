@@ -1,6 +1,6 @@
 # **Bondsports API assignemnt**
 
-- This repository contains an implementation of the provided assignment
+This repository contains an implementation of the provided assignment
 
 ## Runtime layout
 
@@ -16,11 +16,27 @@ npm install
 
 docker compose up -d # spin up pg container
 
+./scripts/init/seed-db.sh # to create tables and seed with mock data
+
 npm run build
 npm start
 
 # alternatively, for process watchers
 npm run start:dev
+```
+
+## Testing
+```bash
+npm test # to run unit tests
+
+# to run various cURL requests on dummy account
+./scripts/deposit [amount]
+./scripts/withdraw [amount]
+./scripts/statement
+./scripts/statement-with-filters
+./scripts/create-account
+
+
 ```
 
 ## Setup
