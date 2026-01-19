@@ -3,7 +3,7 @@ import { TransactionEntity } from '../../app/entities/transaction-entity';
 import { RouteGenericInterface } from 'fastify';
 import { NotFoundError } from '../utils/app-error';
 
-interface DepositAccountRoute extends RouteGenericInterface {
+interface WithdrawAccountRoute extends RouteGenericInterface {
     Params: {
         accountId: string
     }
@@ -11,11 +11,11 @@ interface DepositAccountRoute extends RouteGenericInterface {
         amount: number;
     }
     Reply: {
-        204: void
+        204: void // successful response - no content
     }
 }
 
-const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, res: FastifyReply<DepositAccountRoute>) => {
+const withdrawAccountHandler = async (req: FastifyRequest<WithdrawAccountRoute>, res: FastifyReply<WithdrawAccountRoute>) => {
     const accountEntityGateway = req.appProfile.getAccountEntityGateway();
     const transactionEntityGateway = req.appProfile.getTransactionEntityGateway();
 
@@ -29,7 +29,7 @@ const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, r
 
     if (!accountEntity) throw new NotFoundError("Account not found", { accountId })
 
-    accountEntity.deposit(amount)
+    accountEntity.withdraw(amount)
 
     await accountEntityGateway.update(accountId, accountEntity)
 
@@ -37,7 +37,7 @@ const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, r
         const transactionEntity = new TransactionEntity();
 
         transactionEntity.setAccountId(accountId);
-        transactionEntity.setAmount(amount);
+        transactionEntity.setAmount(-amount);
         transactionEntity.setCreatedAt(Date.now());
 
         transactionEntityGateway.save(transactionEntity);
@@ -52,4 +52,4 @@ const depositAccountHandler = async (req: FastifyRequest<DepositAccountRoute>, r
 
 }
 
-export { depositAccountHandler }
+export { withdrawAccountHandler }

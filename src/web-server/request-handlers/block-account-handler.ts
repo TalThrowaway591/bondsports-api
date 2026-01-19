@@ -1,8 +1,19 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
 import { GeneralError, NotFoundError } from '../utils/app-error';
+import { RouteGenericInterface } from 'fastify';
 
-const blockAccountHandler = async (req: FastifyRequest<{ Params: { accountId: string } }>, res: FastifyReply) => {
+interface BlockAccountRoute extends RouteGenericInterface {
+    Params: {
+        accountId: string
+    }
+    Reply: {
+        204: void
+    }
+}
+
+
+const blockAccountHandler = async (req: FastifyRequest<BlockAccountRoute>, res: FastifyReply<BlockAccountRoute>) => {
     const accountEntityGateway = req.appProfile.getAccountEntityGateway();
 
     const { accountId } = req.params;
@@ -19,7 +30,7 @@ const blockAccountHandler = async (req: FastifyRequest<{ Params: { accountId: st
         throw new GeneralError("Error blocking account", { accountId })
     }
 
-    res.send()
+    res.status(204).send()
 
 }
 

@@ -8,13 +8,22 @@ import sensible from "@fastify/sensible";
 import { errorHandlerPlugin } from "./plugins/error-handler";
 import { createAccountSchema } from "./schemas/create-account-schema";
 
+// TODO: finish schemas
 
 const registerRequestHandlers = (app: FastifyInstance) => {
-    app.get(routes.heartbeat, (req: FastifyRequest, res: FastifyReply) => { res.send(1) });
+    app.get(routes.heartbeat, (_: FastifyRequest, res: FastifyReply) => { res.send(1) });
+
     app.post(routes.accounts.create, { schema: createAccountSchema }, requestHandlers.createAccountHandler)
+
     app.post(routes.accounts.block, requestHandlers.blockAccountHandler)
+
     app.post(routes.accounts.deposit, requestHandlers.depositAccountHandler)
+
     app.get(routes.accounts.statement, requestHandlers.retrieveAccountStatemenetHandler)
+
+    app.post(routes.accounts.withdraw, requestHandlers.withdrawAccountHandler)
+
+    app.get(routes.accounts.balance, requestHandlers.checkAccountBalanceHandler)
 };
 
 

@@ -36,7 +36,6 @@ export type TransactionEntityType = Entity & {
     created_at: string;
 };
 
-
 export type ErrorResponse = {
     error: {
         code: string;
