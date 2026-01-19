@@ -35,3 +35,13 @@ export type TransactionEntityType = Entity & {
     amount: number;
     created_at: string;
 };
+
+
+export type ErrorResponse = {
+    error: {
+        code: string;
+        message: string;
+        requestId?: string;
+        details?: unknown;
+    };
+};

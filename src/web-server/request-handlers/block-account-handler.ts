@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
+import { GeneralError, NotFoundError } from '../utils/app-error';
 
 const blockAccountHandler = async (req: FastifyRequest<{ Params: { accountId: string } }>, res: FastifyReply) => {
     const accountEntityGateway = req.appProfile.getAccountEntityGateway();
@@ -8,17 +9,17 @@ const blockAccountHandler = async (req: FastifyRequest<{ Params: { accountId: st
 
     const accountEntity = await accountEntityGateway.find(accountId)
 
-    if (!accountEntity) {
-        res.status(404).send('account not found')
-
-        return;
-    }
+    if (!accountEntity) throw new NotFoundError("Account not found", { accountId })
 
     accountEntity.blockAccount();
 
-    await accountEntityGateway.update(accountId, accountEntity)
+    try {
+        await accountEntityGateway.update(accountId, accountEntity)
+    } catch (e) {
+        throw new GeneralError("Error blocking account", { accountId })
+    }
 
-    res.send('test')
+    res.send()
 
 }
 

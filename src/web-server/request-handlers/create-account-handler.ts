@@ -1,24 +1,25 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyRequest, FastifyReply, RouteGenericInterface } from 'fastify';
 import { AccountEntity } from "../../app/entities/account-entity";
+import { AppError, GeneralError } from '../utils/app-error';
+import { mapAccountEntityToApiObject, AccountApiObject } from '../../adapters/mappers/account-entity';
 
 interface RequestBody {
     personId: string;
-    balance?: number;
     dailyWithdrawlLimit?: number;
     activeFlag?: boolean;
     accountType?: number // TODO
-
 }
 
-interface CreateAccountRoute {
-    Body: RequestBody
+interface CreateAccountRoute extends RouteGenericInterface {
+    Body: RequestBody;
+    Reply: {
+        201: AccountApiObject
+    }
 }
 
-// TODO: add reply type
-const createAccountHandler = async (req: FastifyRequest<CreateAccountRoute>, res: FastifyReply) => {
+const createAccountHandler = async (req: FastifyRequest<CreateAccountRoute>, res: FastifyReply<CreateAccountRoute>) => {
     const {
         personId,
-        balance = 0,
         dailyWithdrawlLimit = 1000, // rm business logic from handler
         activeFlag = true,
         accountType = 0,
@@ -28,18 +29,24 @@ const createAccountHandler = async (req: FastifyRequest<CreateAccountRoute>, res
 
     const accountEntity = new AccountEntity();
 
+    // validate accout not existing
+
     accountEntity.setPersonId(personId);
-    accountEntity.setBalance(balance)
+    accountEntity.setBalance(0)
     accountEntity.setDailyWithdrawlLimit(dailyWithdrawlLimit)
     accountEntity.setAccountType(accountType)
     accountEntity.setActiveFlag(activeFlag)
     accountEntity.setCreatedTimestamp(Date.now())
 
-    await accountEntityGateway.save(accountEntity);
+    try {
+        await accountEntityGateway.save(accountEntity)
+    } catch (e) {
+        throw new GeneralError("Error creating account", { accountEntity })
+    }
 
     // TODO: how to respond
 
-    res.send('test')
+    res.code(201).send(mapAccountEntityToApiObject(accountEntity))
 
 }
 
