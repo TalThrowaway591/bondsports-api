@@ -65,12 +65,12 @@ npm test # to run unit tests
 - some business logic is stored inside the handlers, it shouldnt' be, there should be usecases
 inside the /app folder (business logic)
 
-- fields regarding money numerals should be counted in cents, this should be persistent throughout the API and any client should be aware of this design choice.
 
+## Design changes
 
-## Design changes:
+The provided document specifies entity parameters. 
 
-The provided document specifies entity parameters - I have different layers of obejects: PG row -> Business Entity -> API Entity.
+I have different layers of obejects: PG row -> Business Entity -> API Entity.
 
 I made some minor changes in the entity specification for convinience and ease-of-use.
 
@@ -79,3 +79,21 @@ I made some minor changes in the entity specification for convinience and ease-o
 
 - `value` in Transaction is changed to `amount` (to signify a numeral)
 - `transactionDate` in Transaction is changed to `createdAt` (term. repetition)
+
+
+# TODO
+
+- Add and interact with a DB connection pool instead of a single connection.
+
+- Add in-memory data persistence for ease-of-use and e2e testing.
+
+- The act of deposit and withdraw has two side effects, changing `account` balance and creating a seperate transaction row in the DB. each act should be atomic, this requires to implement an interface for transactions which I haven't had the time to do.
+
+- discuss the possibility to remove the field `balance` in accounts, implement some type of event sourcing and calculating an account's balance based on addition of transaction history on any given request. 
+
+- `accountType` field in `account` is not used at all, understand it's purpose and uses. in addition add some kind of enum to map account types. if this config dynamic, add a table to keep track of different account types and their corresponding codes
+
+- monetary values are stored as `INT` in DB. understand system constraints and edge cases, it might need to be a bigger variable such as `BIGINT`
+
+- fields regarding money numerals should be counted in cents, this should be persistent throughout the API and any client should be aware of this design choice.
+
