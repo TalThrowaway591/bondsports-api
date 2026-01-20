@@ -67,6 +67,7 @@ I made some minor changes in the entity specification for convinience and ease-o
 
 
 ## TODO
+- Add 'use case' interface and implementation to handle more complex business login between entities in the app folder. I've skipped this because of time constraints (and server architecture became too bloated for such a small project)
 
 - Add and interact with a DB connection pool instead of a single connection.
 

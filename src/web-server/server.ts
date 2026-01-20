@@ -6,14 +6,11 @@ import * as requestHandlers from "./request-handlers/index";
 import { AppProfile } from "./app-profile/app-profile";
 import sensible from "@fastify/sensible";
 import { errorHandlerPlugin } from "./plugins/error-handler";
-import { createAccountSchema } from "./schemas/create-account-schema";
-
-// TODO: finish schemas
 
 const registerRequestHandlers = (app: FastifyInstance) => {
     app.get(routes.heartbeat, (_: FastifyRequest, res: FastifyReply) => { res.send(1) });
 
-    app.post(routes.accounts.create, { schema: createAccountSchema }, requestHandlers.createAccountHandler)
+    app.post(routes.accounts.create, requestHandlers.createAccountHandler)
 
     app.post(routes.accounts.block, requestHandlers.blockAccountHandler)
 
@@ -35,10 +32,14 @@ const registerAppProfile = (app: FastifyInstance, appProfile: AppProfile): void 
     })
 };
 
+const registerPlugins = async (app: FastifyInstance): Promise<void> => {
+    await app.register(sensible)
+
+    await app.register(errorHandlerPlugin)
+}
+
 const createServer = async (): Promise<FastifyInstance> => {
-    const app = Fastify({
-        logger: true
-    });
+    const app = Fastify({ logger: true });
 
     const config = { postgresqlClient: await Config.getPostgresClient() }
 
@@ -48,9 +49,7 @@ const createServer = async (): Promise<FastifyInstance> => {
 
     registerRequestHandlers(app);
 
-    await app.register(sensible)
-
-    await app.register(errorHandlerPlugin)
+    registerPlugins(app)
 
     return app;
 };

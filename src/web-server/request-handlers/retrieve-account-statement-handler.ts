@@ -1,5 +1,4 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { AccountEntity } from "../../app/entities/account-entity";
 import { RouteGenericInterface } from 'fastify';
 import { mapTransactionEntityToApiObject, TransactionApiObject } from '../../adapters/mappers/transaction-entity';
 
@@ -16,8 +15,10 @@ interface RetrieveAccountStatementRoute extends RouteGenericInterface {
     }
 }
 
-
-const retrieveAccountStatemenetHandler = async (req: FastifyRequest<RetrieveAccountStatementRoute>, res: FastifyReply<RetrieveAccountStatementRoute>) => {
+const retrieveAccountStatemenetHandler = async (
+    req: FastifyRequest<RetrieveAccountStatementRoute>,
+    res: FastifyReply<RetrieveAccountStatementRoute>
+) => {
     const transactionEntityGateway = req.appProfile.getTransactionEntityGateway();
 
     const { from, to } = req.query;
