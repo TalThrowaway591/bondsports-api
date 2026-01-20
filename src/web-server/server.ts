@@ -41,7 +41,7 @@ const registerPlugins = async (app: FastifyInstance): Promise<void> => {
 const createServer = async (): Promise<FastifyInstance> => {
     const app = Fastify({ logger: true });
 
-    const config = { postgresqlClient: await Config.getPostgresClient() }
+    const config = { pgPool: await Config.getPostgresPool() }
 
     const appProfile = new LocalAppProfile(config);
 
