@@ -1,6 +1,6 @@
 # **Bondsports API assignemnt**
 
-This repository contains an implementation of the provided assignment
+This repository contains an implementation of the provided assignment.
 
 ## Runtime layout
 
@@ -44,11 +44,11 @@ Different layers of the web-server are separate:
 npm test # to run unit tests
 
 # to run various cURL requests on dummy account
-./scripts/deposit [amount]
-./scripts/withdraw [amount]
-./scripts/statement
-./scripts/statement-with-filters
-./scripts/create-account
+./scripts/deposit.sh [amount]
+./scripts/withdraw.sh [amount]
+./scripts/statement.sh
+./scripts/statement-with-filters.sh
+./scripts/create-account.sh
 ```
 
 ## Design changes
