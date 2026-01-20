@@ -67,13 +67,13 @@ I made some minor changes in the entity specification for convinience and ease-o
 
 
 ## TODO
-- Add 'use case' interface and implementation to handle more complex business login between entities in the app folder. I've skipped this because of time constraints (and server architecture became too bloated for such a small project)
+- [DONE] Add 'use case' interface and implementation to handle more complex business login between entities in the app folder. I've skipped this because of time constraints (and server architecture became too bloated for such a small project)
 
 - [DONE] Add and interact with a DB connection pool instead of a single connection.
 
 - Add in-memory data persistence for ease-of-use and e2e testing.
 
-- The act of deposit and withdraw has two side effects, changing `account` balance and creating a seperate transaction row in the DB. each act should be atomic, this requires to implement an interface for transactions which I haven't had the time to do.
+- [DONE] The act of deposit and withdraw has two side effects, changing `account` balance and creating a seperate transaction row in the DB. each act should be atomic, this requires to implement an interface for transactions which I haven't had the time to do.
 
 - discuss the possibility to remove the field `balance` in accounts, implement some type of event sourcing and calculating an account's balance based on addition of transaction history on any given request. 
 
@@ -83,3 +83,4 @@ I made some minor changes in the entity specification for convinience and ease-o
 
 - fields regarding money numerals should be counted in cents, this should be persistent throughout the API and any client should be aware of this design choice.
 
+- Security risk - I inject some variables in PG interface, this adds risk for SQL Injection. there's a better way to do this.

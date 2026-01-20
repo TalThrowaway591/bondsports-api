@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createAccountHandler } from "../../../src/web-server/request-handlers/create-account-handler";
 import { GeneralError } from "../../../src/web-server/utils/server-error";
 
+import { mapAccountEntityToApiObject } from "../../../src/adapters/mappers/account-entity";
 // Mock the mapper so we can assert it was called correctly and control output
 vi.mock("../../../src/adapters/mappers/account-entity", () => {
     return {
@@ -10,7 +11,6 @@ vi.mock("../../../src/adapters/mappers/account-entity", () => {
     };
 });
 
-import { mapAccountEntityToApiObject } from "../../../src/adapters/mappers/account-entity";
 
 describe("createAccountHandler", () => {
     beforeEach(() => {

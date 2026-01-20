@@ -1,66 +1,62 @@
-import { TransactionEntityType } from '../../types'
+import { TransactionEntityType } from "../../types";
 import { TransactionEntityGateway } from "../../app/ports/transaction-entity-gateway";
 import { PostgresqlDB } from "../../data-persistence/postgresql";
 import { TransactionEntity } from "../../app/entities/transaction-entity";
 
-const mapRowToEntry = (value: TransactionEntityType): TransactionEntity => {
-    const {
-        id,
-        account_id,
-        amount,
-        created_at
-    } = value;
+const mapRowToEntity = (row: TransactionEntityType): TransactionEntity => {
+    const entity = new TransactionEntity(row.id);
 
-    const transationEntity = new TransactionEntity(id);
+    entity.setAccountId(row.account_id);
+    entity.setAmount(row.amount);
+    entity.setCreatedAt(Date.parse(row.created_at));
 
-    transationEntity.setAccountId(account_id);
-    transationEntity.setAmount(amount);
-    transationEntity.setCreatedAt(Date.parse(created_at))
-
-    return transationEntity;
+    return entity;
 };
 
-const mapEntryToRow = (transationEntity: TransactionEntity): TransactionEntityType => {
-    const id = transationEntity.getId();
-    const account_id = transationEntity.getAccountId();
-    const amount = transationEntity.getAmount();
-    const created_at = new Date(transationEntity.getCreatedAt()).toISOString();
-
+const mapEntityToRow = (entity: TransactionEntity): TransactionEntityType => {
     return {
-        id,
-        account_id,
-        amount,
-        created_at
-    }
+        id: entity.getId(),
+        account_id: entity.getAccountId(),
+        amount: entity.getAmount(),
+        created_at: new Date(entity.getCreatedAt()).toISOString(),
+    };
 };
 
 class TransactionPostgresEntityGateway implements TransactionEntityGateway {
-    protected readonly db: PostgresqlDB<TransactionEntityType>
+    constructor(private readonly db: PostgresqlDB<TransactionEntityType>) { }
 
-    protected readonly tableName: string;
-
-    public constructor(db: PostgresqlDB<TransactionEntityType>) {
-        this.db = db;
-        this.tableName = "transactions"
-    }
-
-
-    async save(transactionEntity: TransactionEntity): Promise<void> {
-        await this.db.create(mapEntryToRow(transactionEntity));
-
-        return;
+    async save(entity: TransactionEntity): Promise<void> {
+        await this.db.create(mapEntityToRow(entity));
     }
 
     async listByAccountId(accountId: string): Promise<TransactionEntity[]> {
-        const result = await this.db.get({ key: 'account_id', value: accountId });
-
-        return result.map(value => mapRowToEntry(value));
+        const rows = await this.db.get({ key: "account_id", value: accountId });
+        return rows.map(mapRowToEntity);
     }
 
-    async listByDateBoundary(accountId: string, boundary: { startDate: number, endDate: number }): Promise<TransactionEntity[]> {
-        const result = await this.db.getByBoundary(accountId, boundary);
+    async listByDateBoundary(
+        accountId: string,
+        boundary: { startDate: number; endDate: number }
+    ): Promise<TransactionEntity[]> {
+        const startDate = new Date(boundary.startDate);
+        const endDate = new Date(boundary.endDate);
 
-        return result.map(value => mapRowToEntry(value));
+        const sql = `
+      SELECT *
+      FROM ${this.db.tableName}
+      WHERE account_id = $1
+        AND created_at >= $2
+        AND created_at < $3
+      ORDER BY created_at DESC
+    `;
+
+        const rows = await this.db.query<TransactionEntityType>(sql, [
+            accountId,
+            startDate,
+            endDate,
+        ]);
+
+        return rows.map(mapRowToEntity);
     }
 
     async getWithdrawalAmountByDateBoundary(
@@ -70,7 +66,6 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
         const startDate = new Date(boundary.startDate);
         const endDate = new Date(boundary.endDate);
 
-        // withdrawals are negative in your model, so filter amount < 0 and sum abs(amount)
         const sql = `
       SELECT COALESCE(SUM(ABS(amount)), 0) AS total
       FROM ${this.db.tableName}
@@ -88,8 +83,6 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
 
         return Number(rows[0]?.total ?? 0);
     }
-}
-
 }
 
 export { TransactionPostgresEntityGateway };

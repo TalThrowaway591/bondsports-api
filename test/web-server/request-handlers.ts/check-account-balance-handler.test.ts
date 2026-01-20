@@ -36,7 +36,7 @@ describe("checkAccountBalanceHandler", () => {
     });
 
     it("should throw NotFoundError when account does not exist", async () => {
-        const accountId = "acc_missing";
+        const accountId = "account-3qihtoug4";
 
         const find = vi.fn().mockResolvedValue(null);
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-
+import { mapTransactionEntityToApiObject } from "../../../src/adapters/mappers/transaction-entity";
 import { retrieveAccountStatemenetHandler } from "../../../src/web-server/request-handlers/retrieve-account-statement-handler";
 
 // Mock the mapper
@@ -8,8 +8,6 @@ vi.mock("../../../src/adapters/mappers/transaction-entity", () => {
         mapTransactionEntityToApiObject: vi.fn(),
     };
 });
-
-import { mapTransactionEntityToApiObject } from "../../../src/adapters/mappers/transaction-entity";
 
 describe("retrieveAccountStatemenetHandler", () => {
     beforeEach(() => {
