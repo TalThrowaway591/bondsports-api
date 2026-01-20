@@ -1,41 +1,49 @@
-import 'dotenv/config'
-import { Client } from 'pg';
+import "dotenv/config";
 import config from "config";
+import { Pool } from "pg";
 
 const once = <T>(cb: () => T): (() => T) => {
     let t: undefined | T;
-
     return () => {
         if (!t) t = cb();
-
         return t;
     };
 };
 
 export { once };
 
-
 const Config = {
     get(key: string): any {
         try {
             return config.get(key);
-        } catch (e) {
+        } catch {
             return undefined;
         }
     },
 
-    getPostgresClient: once(async (): Promise<Client> => {
-        const connectionConfig = config.get("postgresql") as object;
+    getPostgresPool: once((): Pool => {
+        const connectionConfig = config.get("postgresql") as Record<string, any>;
 
-        const client = new Client(connectionConfig)
+        const pool = new Pool({
+            ...connectionConfig,
+            max: connectionConfig.max ?? 10, // max connections
+        });
 
-        await client.connect();
+        pool.on("connect", () => {
+            console.log("Postgres pool connected");
+        });
 
-        // @ts-ignore
-        console.log(`Connected to Postgres database on port ${connectionConfig.port}`)
+        pool.on("error", (err) => {
+            console.error("Unexpected Postgres pool error", err);
+        });
 
-        return client;
+        return pool;
     }),
-}
 
-export { Config }
+    closePostgresPool: async (): Promise<void> => {
+        const pool = Config.getPostgresPool();
+        await pool.end();
+    },
+};
+
+export { Config };

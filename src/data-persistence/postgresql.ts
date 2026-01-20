@@ -1,107 +1,74 @@
+import { Pool, PoolClient, QueryResult } from "pg";
 import { Database } from "../types";
-import { Client } from 'pg';
 
-function updateQuerySetter<G extends object>(row: G): string {
-    return Object.entries(row)
-        .map(([key, value]) => {
-            const formatted =
-                typeof value === "string" ? `'${value}'` : value;
-            return `${key}=${formatted}`;
-        })
+type Queryable = Pick<Pool, "query"> | Pick<PoolClient, "query">;
+
+function buildUpdateSetClause<T extends Record<string, any>>(
+    row: T,
+    startIndex = 1
+): { setClause: string; values: any[] } {
+    const keys = Object.keys(row);
+
+    const setClause = keys
+        .map((key, i) => `${key}=$${startIndex + i}`)
         .join(", ");
+
+    const values = keys.map((k) => row[k]);
+
+    return { setClause, values };
 }
 
-export class PostgresqlDB<T extends object> implements Database<T> {
-    client: Client;
+export class PostgresqlDB<T extends Record<string, any>> implements Database<T> {
+    private db: Queryable;
     tableName: string;
 
-    constructor(client: any, tableName: string) {
-        this.client = client;
+    constructor(db: Queryable, tableName: string) {
+        this.db = db;
         this.tableName = tableName;
     }
-    async get(whereClause?: { key: string, value: string }): Promise<T[]> {
-        let query = `SELECT * FROM ${this.tableName}`
+
+    async get(whereClause?: { key: string; value: any }): Promise<T[]> {
+        let query = `SELECT * FROM ${this.tableName}`;
+        const params: any[] = [];
 
         if (whereClause) {
-            const { key, value } = whereClause
-            const formattedValue = typeof value === 'string' ? `'${value}'` : value
-
-            console.log(typeof value)
-            query += ` WHERE ${key} = ${formattedValue}`
+            query += ` WHERE ${whereClause.key} = $1`;
+            params.push(whereClause.value);
         }
 
-        const result = (await this.client.query(query)).rows;
-
-        return result;
+        const result = await this.db.query(query, params);
+        return result.rows;
     }
 
-    async create(row: T) {
-        const columns = Object.keys(row).reduce(
-            (previous: string, current: string) => `${previous.length > 0 ? `${previous},` : previous} ${current}`,
-            ""
-        );
-        const values = Object.values(row).reduce(
-            (previous: string, current: string) =>
-                `${previous.length > 0 ? `${previous},` : previous} ${typeof current === "string" ? `'${current}'` : current}`,
-            ""
-        );
+    async create(row: T): Promise<T> {
+        const keys = Object.keys(row);
+        const values = Object.values(row);
 
-        const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${values})`;
+        const columns = keys.join(", ");
+        const placeholders = keys.map((_, i) => `$${i + 1}`).join(", ");
 
-        await this.client.query(query);
+        const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${placeholders})`;
 
+        await this.db.query(query, values);
         return row;
     }
 
-    async update(id: string, row: T) {
-        const updateQueryString = updateQuerySetter<T>(row);
+    async update(id: string, row: Partial<T>): Promise<void> {
+        const { setClause, values } = buildUpdateSetClause(row as T, 1);
 
-        const query = `UPDATE ${this.tableName} SET ${updateQueryString} WHERE id='${id}'`
-
-        console.log('updateQueryString')
-        console.log(query)
-
-        await this.client.query(query);
-
-        return;
+        const query = `UPDATE ${this.tableName} SET ${setClause} WHERE id = $${values.length + 1}`;
+        await this.db.query(query, [...values, id]);
     }
 
-    async find(accountId: string): Promise<T | null> {
-        const query = `SELECT * FROM ${this.tableName} WHERE id='${accountId}'`
-
-        const result = (await this.client.query(query)).rows[0];
-
-        console.log('result')
-        console.log(result)
-
-        return result;
+    async find(id: string): Promise<T | null> {
+        const query = `SELECT * FROM ${this.tableName} WHERE id = $1`;
+        const result = await this.db.query(query, [id]);
+        return result.rows[0] ?? null;
     }
 
-    // TODO: fix parameres not general
-    async getByBoundary(accountId: string, boundary: { startDate: number, endDate: number }): Promise<T[]> {
-        const formattedBoundary = {
-            startDate: new Date(boundary.startDate),
-            endDate: new Date(boundary.endDate)
-        }
-
-        // TODO: change all queries to have this type of injection
-        let query = `SELECT * FROM ${this.tableName} WHERE account_id = '${accountId}' AND created_at >= $1  AND created_at < $2`
-
-        console.log('getByBoundary query')
-        console.log(query)
-
-        const result = (await this.client.query(query, [formattedBoundary.startDate, formattedBoundary.endDate])).rows;
-
-        return result;
+    // general query method, bad pracice?
+    async query<R = any>(text: string, params: any[] = []): Promise<R[]> {
+        const result = await this.db.query(text, params);
+        return result.rows as R[];
     }
-
-    // async delete(accountId: string) {
-    //     const query = `UPDATE ${this.tableName} SET active = false WHERE id='${accountId}'`
-
-    //     await this.client.query(query);
-
-    //     return null
-    // }
-
-
 }

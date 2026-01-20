@@ -27,6 +27,15 @@ export class InvalidTransactionTimestampError extends DomainError {
     }
 }
 
+export class DailyLimitExceededError extends DomainError {
+    public readonly code = "DAILY_LIMIT_EXCEEDED";
+
+    constructor() {
+        super('Withdraw amount exceeds daily limit');
+        this.name = "DailyLimitExceedeError";
+    }
+}
+
 export class TransactionNotFoundError extends DomainError {
     public readonly code = "TRANSACTION_NOT_FOUND";
 

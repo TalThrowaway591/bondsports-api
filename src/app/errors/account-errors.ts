@@ -1,5 +1,13 @@
 import { DomainError } from "./domain-error";
 
+export class ResourceNotFoundError extends DomainError {
+    public readonly code = "RESOURCE_NOT_FOUND";
+    constructor(accountId: string) {
+        super(`${accountId} not found`);
+        this.name = "ResourceNotFoundError";
+    }
+}
+
 export class InvalidAmountError extends DomainError {
     public readonly code = "INVALID_AMOUNT";
     constructor(amount: number) {

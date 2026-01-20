@@ -41,7 +41,7 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
 
     public constructor(db: PostgresqlDB<TransactionEntityType>) {
         this.db = db;
-        this.tableName = "accounts"
+        this.tableName = "transactions"
     }
 
 
@@ -51,7 +51,7 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
         return;
     }
 
-    async list(accountId: string): Promise<TransactionEntity[]> {
+    async listByAccountId(accountId: string): Promise<TransactionEntity[]> {
         const result = await this.db.get({ key: 'account_id', value: accountId });
 
         return result.map(value => mapRowToEntry(value));
@@ -63,11 +63,33 @@ class TransactionPostgresEntityGateway implements TransactionEntityGateway {
         return result.map(value => mapRowToEntry(value));
     }
 
-    // async delete(entryId: string): Promise<void> {
-    //     await this.db.delete(entryId);
+    async getWithdrawalAmountByDateBoundary(
+        accountId: string,
+        boundary: { startDate: number; endDate: number }
+    ): Promise<number> {
+        const startDate = new Date(boundary.startDate);
+        const endDate = new Date(boundary.endDate);
 
-    //     return;
-    // }
+        // withdrawals are negative in your model, so filter amount < 0 and sum abs(amount)
+        const sql = `
+      SELECT COALESCE(SUM(ABS(amount)), 0) AS total
+      FROM ${this.db.tableName}
+      WHERE account_id = $1
+        AND created_at >= $2
+        AND created_at < $3
+        AND amount < 0
+    `;
+
+        const rows = await this.db.query<{ total: string | number }>(sql, [
+            accountId,
+            startDate,
+            endDate,
+        ]);
+
+        return Number(rows[0]?.total ?? 0);
+    }
+}
+
 }
 
 export { TransactionPostgresEntityGateway };

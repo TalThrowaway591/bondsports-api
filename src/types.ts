@@ -5,6 +5,7 @@ export interface Database<T> {
     get: () => Promise<T[]>;
     find: (id: string) => Promise<T | null>;
     update: (id: string, row: T) => Promise<void>;
+    query: <R>(text: string, params: any[]) => Promise<R[]> // bad practice?
     // delete: (id: string) => Promise<void>;
 }
 

@@ -3,9 +3,17 @@ import { TransactionEntity } from "../entities/transaction-entity";
 interface TransactionEntityGateway {
     save(transactionEntity: TransactionEntity): Promise<void>;
 
-    list(accountId: string): Promise<TransactionEntity[]>;
+    listByAccountId(accountId: string): Promise<TransactionEntity[]>;
 
-    listByDateBoundary(accountId: string, boundary: { startDate: number, endDate: number }): Promise<TransactionEntity[]>;
+    listByDateBoundary(
+        accountId: string,
+        boundary: { startDate: number; endDate: number }
+    ): Promise<TransactionEntity[]>;
+
+    getWithdrawalAmountByDateBoundary(
+        accountId: string,
+        boundary: { startDate: number; endDate: number }
+    ): Promise<number>;
 
     // find(accountId: string): Promise<AccountEntity>;
 
